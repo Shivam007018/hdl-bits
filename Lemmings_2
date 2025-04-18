@@ -1,0 +1,80 @@
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    input ground,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah ); 
+
+    reg [1:0] state, next_state;
+    parameter L = 2'b00, R = 2'b01, FL = 2'b10, FR = 2'b11; // falling left, falling right
+
+    // State transition on clock
+    always @(posedge clk or posedge areset)
+        begin
+            if (areset)
+                state <= L;
+            else
+                state <= next_state;
+        end
+
+    // Next state logic
+    always @(*)
+        begin
+            case (state)
+                L : begin  
+                        if (!ground)
+                            next_state = FL;
+                        else
+                            next_state = bump_left ? R : L;
+                    end
+
+                FL: next_state = ground ? L : FL;
+
+                R : begin
+                        if (!ground)
+                            next_state = FR;
+                        else
+                            next_state = bump_right ? L : R;
+                    end
+
+                FR: next_state = ground ? R : FR;
+
+                default: next_state = L;
+            endcase
+        end
+
+    // Output logic
+    always @(*)
+        begin
+            walk_left = 0;
+            walk_right = 0;
+            aaah = 0;
+
+            case (state)
+                L: begin 
+                    aaah = 0;
+                    walk_left = 1;
+                    walk_right = 0;
+                end
+
+                FL: begin
+                    aaah = 1;
+                    
+                end
+
+                R: begin
+                    aaah = 0;
+                    walk_left = 0;
+                    walk_right = 1;
+                end
+
+                FR: begin
+                    aaah = 1;
+                   
+                end
+            endcase
+        end
+endmodule
