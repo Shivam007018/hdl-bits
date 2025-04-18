@@ -1,0 +1,36 @@
+module top_module(
+    input clk,
+    input areset,    
+    input in,
+    output reg out
+);                                                                        // 3 always block --> 1 for synch/asynch logic , 1 for state logic, 1 for output logic
+                                                                                                      //seq.ckt               //comb ckt           //comb ckt
+    reg state, next_state;                                                                            
+    parameter B = 1'b0, A = 1'b1;
+
+
+    always @(posedge clk or posedge areset) begin
+        if (areset)
+            state <= B;
+        else
+            state <= next_state;
+    end
+
+    // Next-state logic
+    always @(*) begin
+        case (state)
+            B: next_state = (in ? B : A);
+            A: next_state = (in ? A : B);
+            default: next_state = B;
+        endcase
+    end
+
+    // Output logic (Moore type)
+    always @(*) begin
+        case (state)
+            B: out = 1;
+            A: out = 0;
+        endcase
+    end
+
+endmodule
