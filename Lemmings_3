@@ -1,0 +1,142 @@
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output reg walk_left,
+    output reg walk_right,
+    output reg aaah,
+    output reg digging ); 
+    
+    reg[2:0] state,next_state;
+    parameter L=3'b000,R = 3'b001, FL =3'b010,FR = 3'b011, DIG_L = 3'b100, DIG_R=3'b101;
+    
+    // asynchronous reset 
+    
+    always@(posedge clk or posedge areset)
+        begin
+            if(areset)
+            state<=L;
+    else
+        state<=next_state;
+        end
+    // state transition
+    // fall>> dig>> walk
+    always@(*)
+        begin
+            case(state)
+                L : begin
+                    /* if(!gnd)
+                            n_s = l;   
+                        else if(dig)
+                           n_s= dig_l;
+                         else if(b_l)
+                          n-s = r;
+                             else
+                             ns = l;*/
+                   
+                     
+                    if(!ground)
+        next_state = FL;
+                    else if(ground && dig)
+        next_state = DIG_L;
+                    else if(ground && !dig)
+        next_state = bump_left ? R : L;
+end
+                R : begin
+                    if(!ground)
+                        next_state=FR;
+                    else if(dig)
+                        next_state =DIG_R;
+                    else if(bump_right)
+                        next_state = L;
+                    else
+                        next_state = R;
+                end
+                                                  
+                    FL:     next_state = ground? L: FL;
+                    FR :    next_state = ground? R : FR;
+                    
+                    DIG_L :  next_state = ground? DIG_L : FL;
+                    DIG_R : next_state = ground? DIG_R: FR;
+            endcase
+        end
+    
+    
+    // output logic 
+    
+    always@(*)begin
+        // default output
+        walk_left =0;
+        walk_right =0;
+        aaah =0;
+        digging =0;
+        
+        case(state)
+            
+      L : walk_left =1;   
+      FL : aaah = 1 ;
+       R : 
+            walk_right =1;
+         FR : aaah =1;
+          DIG_L  : digging =1;
+            DIG_R : digging = 1 ;
+        endcase
+    end
+endmodule
+        
+                
+                   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
