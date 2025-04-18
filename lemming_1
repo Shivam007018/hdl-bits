@@ -1,0 +1,42 @@
+module top_module(
+input clk,
+    input areset,
+    input bump_left,
+    input bump_right,
+ output reg walk_left,
+    output reg walk_right
+);
+    reg state,next_state;
+    parameter L =1'b0, R =1'b1;
+    always@(posedge clk or posedge areset)
+        begin
+            if(areset)
+                state<=L;
+            else
+                state<=next_state;
+        end
+    
+    always@(*)
+        begin
+            case(state)
+                L : next_state=   bump_left? R:L;
+                R : next_state=  bump_right? L:R;
+            endcase
+        end
+    
+    always@(*)
+        begin
+            case(state)
+                L: begin
+                    walk_left =1;
+                   walk_right =0;
+                end
+                R :begin
+                    walk_right =1;
+                    walk_left=0;
+                end
+            endcase
+        end
+endmodule
+    
+    
