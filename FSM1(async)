@@ -1,4 +1,42 @@
 module top_module(
+input clk,
+input areset,
+    input in,                           1.) always state transition
+                                         2.) state flipflops (in which value of state is triggered at each positive edge)
+    output reg out                       3.) o/p logic
+);
+    reg state, next_state;
+    parameter B = 1'b0, A = 1'b1;
+    // state transition
+    always@(*)
+        begin
+            case(state)
+                B : next_state = (in ? B : A) ;    
+                A : next_state = (in ? A : B) ;
+                default next_state = B;
+            endcase
+        end
+    
+    //at posedge clk
+    
+    always@(posedge clk or posedge areset)
+        begin
+            if(areset )
+                state<= B;
+            else
+                state<=next_state;
+        end
+    // output logic 
+    always@(*)
+        begin
+            case(state)
+                B : out = 1;
+                A : out = 0;
+            endcase
+        end
+endmodule 
+            
+                module top_module(
     input clk,
     input areset,    
     input in,
